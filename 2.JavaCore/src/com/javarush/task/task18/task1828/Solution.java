@@ -39,35 +39,28 @@ public class Solution {
         ArrayList<String> fileStrings = new ArrayList<>();
         BufferedReader fileStringReader;
         BufferedWriter fileStringWriter;
+        String checkedString;
         String id = args[1];
 
         fileStringReader = new BufferedReader(new InputStreamReader(System.in));
         File fileName = new File(fileStringReader.readLine());
 
         fileStringReader = new BufferedReader(new FileReader(fileName));
-        while (fileStringReader.ready()) {
-            fileStrings.add(fileStringReader.readLine());
+
+        while ((checkedString = fileStringReader.readLine()) != null) {
+
+            if ((checkedString.startsWith(id)) && (args[0].equals("-u"))){
+                checkedString = String.format("%1$-8.8s %2$-30.30s %3$-8.8s %4$-4.4s",
+                        args[1], args[2], args[3], args[4]);
+            }
+
+            if ((checkedString.startsWith(id)) && (args[0].equals("-d"))){
+                continue;
+            }
+
+            fileStrings.add(checkedString);
         }
         fileStringReader.close();
-
-        for (int i = 0; i < fileStrings.size(); i++) {
-
-            String s = fileStrings.get(i);
-
-            if (s.startsWith(id)) {
-
-                if (args[0].equals("-u")) {
-                    String updatedString = String.format("%1$-8.8s %2$-30.30s %3$-8.8s %4$-4.4s",
-                            args[1], args[2], args[3], args[4]);
-                    fileStrings.set(i, updatedString);
-                }
-
-                if (args[0].equals("-d")) {
-                    fileStrings.remove(s);
-                    fileStrings.trimToSize();
-                }
-            }
-        }
 
         fileStringWriter = new BufferedWriter(new FileWriter(fileName));
             for (String s: fileStrings){
