@@ -36,36 +36,39 @@ import java.util.ArrayList;
 public class Solution {
     public static void main(String[] args) throws IOException {
 
+        if ((args[0].equals("-d"))||(args[0].equals("-u"))) {
+
         ArrayList<String> fileStrings = new ArrayList<>();
         BufferedReader fileStringReader;
         BufferedWriter fileStringWriter;
         String checkedString;
         String id = args[1];
 
-        fileStringReader = new BufferedReader(new InputStreamReader(System.in));
-        File fileName = new File(fileStringReader.readLine());
+            fileStringReader = new BufferedReader(new InputStreamReader(System.in));
+            File fileName = new File(fileStringReader.readLine());
 
-        fileStringReader = new BufferedReader(new FileReader(fileName));
+            fileStringReader = new BufferedReader(new FileReader(fileName));
 
-        while ((checkedString = fileStringReader.readLine()) != null) {
+            while ((checkedString = fileStringReader.readLine()) != null) {
 
-            if ((checkedString.startsWith(id)) && (args[0].equals("-u"))){
-                checkedString = String.format("%1$-8.8s %2$-30.30s %3$-8.8s %4$-4.4s",
-                        args[1], args[2], args[3], args[4]);
+                if ((checkedString.startsWith(id)) && (args[0].equals("-u"))) {
+                    checkedString = String.format("%1$-8.8s %2$-30.30s %3$-8.8s %4$-4.4s",
+                            args[1], args[2], args[3], args[4]);
+                }
+
+                if ((checkedString.startsWith(id)) && (args[0].equals("-d"))) {
+                    continue;
+                }
+
+                fileStrings.add(checkedString);
             }
+            fileStringReader.close();
 
-            if ((checkedString.startsWith(id)) && (args[0].equals("-d"))){
-                continue;
-            }
-
-            fileStrings.add(checkedString);
-        }
-        fileStringReader.close();
-
-        fileStringWriter = new BufferedWriter(new FileWriter(fileName));
-            for (String s: fileStrings){
-                fileStringWriter.write(s+"\r\n");
+            fileStringWriter = new BufferedWriter(new FileWriter(fileName));
+            for (String s : fileStrings) {
+                fileStringWriter.write(s + "\r\n");
             }
             fileStringWriter.close();
-        }
+            }
+         }
     }
