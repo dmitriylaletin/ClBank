@@ -1,6 +1,6 @@
 package com.javarush.task.task18.task1827;
 
-/* 
+/*
 Прайсы
 
 CrUD для таблицы внутри файла.
@@ -31,59 +31,53 @@ id productName price quantity
 
 
 import java.io.*;
-import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Solution {
 
     public static void main(String[] args) throws Exception {
-       BufferedReader fileNameReader = new BufferedReader(new InputStreamReader(System.in));
-       File fileName = new File(fileNameReader.readLine());
-       fileNameReader.close();
-
-       if (args.length != 0){
-           String id = idGenerator(fileName);
-           String description = args[1];
-           String price = args[2];
-           String quantity = args[3];
-           String productString = String.format("%1$-8.8s %2$-30.30s %3$-8.8s %4$-4.4s", id, description, price, quantity);
-           addToBase(fileName, productString);
-       }
-    }
-
-    public static String idGenerator(File fileName){
-        int id = 0;
-        String idString;
-        BufferedReader bufferedReader = null;
-        if (fileName.exists()) {
-            try {
-                bufferedReader = new BufferedReader(new FileReader(fileName));
-                while ((idString = bufferedReader.readLine()) != null) {
-                    String[] datas = idString.split(" ");
-                    idString = datas[0];
-                    int currentId = Integer.valueOf(idString);
-                    id = (id > currentId) ? id : currentId;
-                }
-                bufferedReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return String.valueOf(++id);
-    }
-
-    public static void addToBase(File fileName, String dataString){
+        if (args.length < 4 || !args[0].equals("-c")) return;
+        
+        float price;
+        int quantity;
+        
         try {
-
-            if(!fileName.exists()){
-                fileName.createNewFile();
-            }
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName, true));
-            bufferedWriter.write( dataString + "\n");
-            bufferedWriter.close();
-
-        }catch (IOException e){
-            e.printStackTrace();}
-
+            price = Float.parseFloat(args[2]);
+            quantity = Integer.parseInt(args[3]);
+        } catch (NumberFormatException e) {
+            return;
+        }
+            String productName = args[1];
+        
+        BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+        String fileName = consoleReader.readLine();
+        consoleReader.close();
+        
+        List<String> lines = new ArrayList<>();
+        
+        try (BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)))) {
+            while (fileReader.ready())
+                lines.add(fileReader.readLine());
+        }
+        
+        int maxID = 0;
+        for (String s : lines) {
+        String[] datas = s.split(" ");
+        int currentId = Integer.valueOf(datas[0]);
+        maxID = (maxID > currentId) ? maxID : currentId;
+        }
+        
+        String productString = String.format("%1$-8.8s %2$-30.30s %3$-8.8s %4$-4.4s", maxID+1, productName, price, quantity);
+        
+        lines.add(productString);
+        try (BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)))) {
+            for (String s: lines)
+                buf.write(s+"\r\n");
+        }
     }
 }
+
